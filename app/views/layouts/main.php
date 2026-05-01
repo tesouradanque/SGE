@@ -265,6 +265,13 @@
 
     </main>
 
+    <!-- Footer -->
+    <div class="footer">
+      <div class="copyright text-center">
+        <p class="mb-0">Copyright &copy; <?= date('Y') ?> <strong>SGE</strong> &mdash; Sistema de Gestão de Estoque</p>
+      </div>
+    </div>
+
   </div><!-- /#main-wrapper -->
 
   <script src="<?= BASE_URL ?>/public/theme/vendor/jquery/dist/jquery.min.js?v=3"></script>
