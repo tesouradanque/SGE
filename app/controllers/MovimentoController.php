@@ -7,32 +7,35 @@ class MovimentoController extends Controller {
 
     public function __construct() { $this->requireAuth(); }
 
+    const PER_PAGE = 30;
+
     public function index(): void {
         $matModel = new Material();
         $fatModel = new Fatura();
         $reqModel = new Requisicao();
 
         $filtros = $this->getFiltros();
+        $page    = max(1, (int) ($_GET['p'] ?? 1));
 
-        // Entradas (itens_fatura)
-        $entradas = $fatModel->movimentosEntrada($filtros);
-        // Saídas (itens_requisicao)
-        $saidas   = $reqModel->movimentos($filtros);
-
-        // Unir e ordenar por data DESC
-        $todos = array_merge($entradas, $saidas);
+        $todos = array_merge(
+            $fatModel->movimentosEntrada($filtros),
+            $reqModel->movimentos($filtros)
+        );
         usort($todos, fn($a, $b) => strcmp($b['data'] . $b['referencia'], $a['data'] . $a['referencia']));
 
-        // Totais
         $totalEntradas = array_sum(array_column(array_filter($todos, fn($r) => $r['tipo'] === 'entrada'), 'quantidade'));
         $totalSaidas   = array_sum(array_column(array_filter($todos, fn($r) => $r['tipo'] === 'saida'),   'quantidade'));
 
+        $pag        = $this->paginate(count($todos), self::PER_PAGE, $page);
+        $movimentos = array_slice($todos, $pag['offset'], $pag['perPage']);
+
         $this->view('movimentos.index', [
-            'movimentos'    => $todos,
+            'movimentos'    => $movimentos,
             'materiais'     => $matModel->all('descricao ASC'),
             'filtros'       => $filtros,
             'totalEntradas' => $totalEntradas,
             'totalSaidas'   => $totalSaidas,
+            'pag'           => $pag,
         ]);
     }
 

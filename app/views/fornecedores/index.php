@@ -5,6 +5,19 @@
   </a>
 </div>
 
+<div class="card mb-3">
+  <div class="card-body py-2 px-3">
+    <form method="GET" action="<?= BASE_URL ?>/fornecedor" class="d-flex gap-2 align-items-center">
+      <input type="text" name="q" class="form-control form-control-sm" style="max-width:280px"
+        placeholder="Pesquisar por nome ou NUIT…" value="<?= htmlspecialchars($search ?? '') ?>">
+      <button type="submit" class="btn btn-sm btn-primary"><i class="fas fa-search"></i></button>
+      <?php if (!empty($search)): ?>
+        <a href="<?= BASE_URL ?>/fornecedor" class="btn btn-sm btn-outline-secondary"><i class="fas fa-times"></i></a>
+      <?php endif; ?>
+    </form>
+  </div>
+</div>
+
 <div class="card">
   <div class="table-responsive">
     <table class="table table-hover mb-0">
@@ -38,6 +51,8 @@
     </table>
   </div>
 </div>
+
+<?php include APP_PATH . '/views/partials/pagination.php'; ?>
 
 <!-- Delete modal -->
 <div class="modal fade" id="delModal" tabindex="-1">

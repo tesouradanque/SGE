@@ -3,6 +3,19 @@
   <a href="<?= BASE_URL ?>/funcionario/create" class="btn btn-primary"><i class="fas fa-plus me-1"></i>Novo Funcionário</a>
 </div>
 
+<div class="card mb-3">
+  <div class="card-body py-2 px-3">
+    <form method="GET" action="<?= BASE_URL ?>/funcionario" class="d-flex gap-2 align-items-center">
+      <input type="text" name="q" class="form-control form-control-sm" style="max-width:280px"
+        placeholder="Pesquisar por nome ou cargo…" value="<?= htmlspecialchars($search ?? '') ?>">
+      <button type="submit" class="btn btn-sm btn-primary"><i class="fas fa-search"></i></button>
+      <?php if (!empty($search)): ?>
+        <a href="<?= BASE_URL ?>/funcionario" class="btn btn-sm btn-outline-secondary"><i class="fas fa-times"></i></a>
+      <?php endif; ?>
+    </form>
+  </div>
+</div>
+
 <div class="card">
   <div class="table-responsive">
     <table class="table table-hover mb-0">
@@ -33,6 +46,8 @@
     </table>
   </div>
 </div>
+
+<?php include APP_PATH . '/views/partials/pagination.php'; ?>
 
 <div class="modal fade" id="delModal" tabindex="-1">
   <div class="modal-dialog modal-sm"><div class="modal-content">

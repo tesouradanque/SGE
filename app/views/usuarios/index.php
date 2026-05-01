@@ -50,6 +50,8 @@
   </div>
 </div>
 
+<?php include APP_PATH . '/views/partials/pagination.php'; ?>
+
 <div class="modal fade" id="delModal" tabindex="-1">
   <div class="modal-dialog modal-sm"><div class="modal-content">
     <div class="modal-header"><h6 class="modal-title">Confirmar</h6><button class="btn-close" data-bs-dismiss="modal"></button></div>

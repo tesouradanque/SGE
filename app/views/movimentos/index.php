@@ -92,16 +92,8 @@
       <tbody>
       <?php if (empty($movimentos)): ?>
         <tr><td colspan="8" class="text-center text-muted py-4">Nenhum movimento encontrado.</td></tr>
-      <?php else: ?>
-        <?php
-        // Aplicar filtro tipo se definido (vem dos dois modelos misturados)
-        $lista = $movimentos;
-        if (!empty($filtros['tipo'])) {
-            $lista = array_filter($lista, fn($r) => $r['tipo'] === $filtros['tipo']);
-        }
-        foreach ($lista as $r):
-            $isEntrada = $r['tipo'] === 'entrada';
-        ?>
+      <?php else: foreach ($movimentos as $r):
+            $isEntrada = $r['tipo'] === 'entrada'; ?>
         <tr>
           <td>
             <span class="badge <?= $isEntrada ? 'bg-success' : 'bg-danger' ?>">
@@ -121,12 +113,12 @@
           <td class="text-end"><?= $fmt($r['preco_unitario']) ?> MT</td>
           <td class="text-end fw-semibold"><?= $fmt($r['subtotal']) ?> MT</td>
         </tr>
-        <?php endforeach; ?>
-      <?php endif; ?>
+        <?php endforeach; endif; ?>
       </tbody>
     </table>
   </div>
 </div>
+<?php include APP_PATH . '/views/partials/pagination.php'; ?>
 
 <link rel="stylesheet" href="<?= BASE_URL ?>/public/theme/vendor/flatpickr/dist/flatpickr.min.css">
 <script src="<?= BASE_URL ?>/public/theme/vendor/flatpickr/dist/flatpickr.min.js"></script>

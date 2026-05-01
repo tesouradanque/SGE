@@ -22,7 +22,7 @@ class RelatorioController extends Controller {
         $reqModel = new Requisicao();
         $matModel = new Material();
 
-        $this->view('relatorios.mensal', [
+        $data = [
             'mes'                     => $mes,
             'ano'                     => $ano,
             'nomeMes'                 => $this->nomeMes($mes),
@@ -31,7 +31,28 @@ class RelatorioController extends Controller {
             'materiaisPorFuncionario' => $reqModel->materiaisPorFuncionario($mes, $ano),
             'totalPorFornecedor'      => $fatModel->totalPorFornecedor($mes, $ano),
             'stockActual'             => $matModel->getStockActual(),
-        ]);
+        ];
+        $this->view('relatorios.mensal', $data);
+    }
+
+    public function pdf(): void {
+        $mes = (int) ($_GET['mes'] ?? date('m'));
+        $ano = (int) ($_GET['ano'] ?? date('Y'));
+
+        $fatModel = new Fatura();
+        $reqModel = new Requisicao();
+        $matModel = new Material();
+
+        $this->view('relatorios.pdf', [
+            'mes'                     => $mes,
+            'ano'                     => $ano,
+            'nomeMes'                 => $this->nomeMes($mes),
+            'faturas'                 => $fatModel->porPeriodo($mes, $ano),
+            'requisicoes'             => $reqModel->porPeriodo($mes, $ano),
+            'materiaisPorFuncionario' => $reqModel->materiaisPorFuncionario($mes, $ano),
+            'totalPorFornecedor'      => $fatModel->totalPorFornecedor($mes, $ano),
+            'stockActual'             => $matModel->getStockActual(),
+        ], null);
     }
 
     private function nomeMes(int $m): string {

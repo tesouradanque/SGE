@@ -13,9 +13,15 @@ class AjusteController extends Controller {
         $this->matModel = new Material();
     }
 
+    const PER_PAGE = 25;
+
     public function index(): void {
+        $page = max(1, (int) ($_GET['p'] ?? 1));
+        $all  = $this->model->allComMaterial();
+        $pag  = $this->paginate(count($all), self::PER_PAGE, $page);
         $this->view('ajustes.index', [
-            'ajustes' => $this->model->allComMaterial(),
+            'ajustes' => array_slice($all, $pag['offset'], $pag['perPage']),
+            'pag'     => $pag,
         ]);
     }
 

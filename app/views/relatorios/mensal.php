@@ -7,9 +7,15 @@ $titulo = "Relatório Mensal – {$nomeMes} {$ano}";
     <a href="<?= BASE_URL ?>/relatorio" class="btn btn-sm btn-outline-secondary"><i class="fas fa-arrow-left"></i></a>
     <h5 class="page-title mb-0"><i class="fas fa-chart-bar me-2 text-primary"></i><?= $titulo ?></h5>
   </div>
-  <button onclick="window.print()" class="btn btn-sm btn-outline-secondary">
-    <i class="fas fa-print me-1"></i>Imprimir
-  </button>
+  <div class="d-flex gap-2">
+    <a href="<?= BASE_URL ?>/relatorio/pdf?mes=<?= $mes ?>&amp;ano=<?= $ano ?>"
+       target="_blank" class="btn btn-sm btn-danger">
+      <i class="fas fa-file-pdf me-1"></i>Exportar PDF
+    </a>
+    <button onclick="window.print()" class="btn btn-sm btn-outline-secondary">
+      <i class="fas fa-print me-1"></i>Imprimir
+    </button>
+  </div>
 </div>
 
 <!-- Navegação de secções -->
@@ -177,9 +183,10 @@ $titulo = "Relatório Mensal – {$nomeMes} {$ano}";
 
 <style>
 @media print {
-  #sidebar, #topbar, #sidebar-toggle, .flash-container,
-  .btn, a.btn, nav { display: none !important; }
-  .card { box-shadow: none !important; border: 1px solid #ddd !important; }
-  #main-content { padding: 0 !important; }
+  .deznav, .nav-header, .header, .nav-control,
+  .d-flex.gap-2.flex-wrap, .btn, a.btn { display: none !important; }
+  .content-body { margin: 0 !important; padding: 0 !important; }
+  .card { box-shadow: none !important; border: 1px solid #ccc !important; margin-bottom: 12px !important; }
+  .page-title { font-size: 14pt !important; }
 }
 </style>

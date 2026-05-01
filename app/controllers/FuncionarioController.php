@@ -4,6 +4,7 @@ require_once APP_PATH . '/models/Funcionario.php';
 class FuncionarioController extends Controller {
 
     private Funcionario $model;
+    const PER_PAGE = 25;
 
     public function __construct() {
         $this->requireAuth();
@@ -12,6 +13,7 @@ class FuncionarioController extends Controller {
 
     public function index(): void {
         $search = trim($_GET['q'] ?? '');
+        $page   = max(1, (int) ($_GET['p'] ?? 1));
         $all    = $this->model->all('nome ASC');
         if ($search !== '') {
             $s   = mb_strtolower($search);
@@ -20,7 +22,9 @@ class FuncionarioController extends Controller {
                 str_contains(mb_strtolower($f['cargo'] ?? ''), $s)
             ));
         }
-        $this->view('funcionarios.index', ['funcionarios' => $all, 'search' => $search]);
+        $pag          = $this->paginate(count($all), self::PER_PAGE, $page);
+        $funcionarios = array_slice($all, $pag['offset'], $pag['perPage']);
+        $this->view('funcionarios.index', ['funcionarios' => $funcionarios, 'search' => $search, 'pag' => $pag]);
     }
 
     public function create(): void {
