@@ -4,7 +4,7 @@ require_once APP_PATH . '/models/Usuario.php';
 class UsuarioController extends Controller {
 
     private Usuario $model;
-    const PER_PAGE = 25;
+    const PER_PAGE = 10;
 
     public function __construct() {
         $this->requireAdmin();
@@ -13,7 +13,7 @@ class UsuarioController extends Controller {
 
     public function index(): void {
         $page  = max(1, (int) ($_GET['p'] ?? 1));
-        $all   = $this->model->all('nome ASC');
+        $all   = $this->model->all('id DESC');
         $pag   = $this->paginate(count($all), self::PER_PAGE, $page);
         $this->view('usuarios.index', [
             'usuarios' => array_slice($all, $pag['offset'], $pag['perPage']),

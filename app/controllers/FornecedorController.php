@@ -4,7 +4,7 @@ require_once APP_PATH . '/models/Fornecedor.php';
 class FornecedorController extends Controller {
 
     private Fornecedor $model;
-    const PER_PAGE = 25;
+    const PER_PAGE = 10;
 
     public function __construct() {
         $this->requireAuth();
@@ -14,7 +14,7 @@ class FornecedorController extends Controller {
     public function index(): void {
         $search = trim($_GET['q'] ?? '');
         $page   = max(1, (int) ($_GET['p'] ?? 1));
-        $all    = $this->model->all('nome ASC');
+        $all    = $this->model->all('id DESC');
         if ($search !== '') {
             $s   = mb_strtolower($search);
             $all = array_values(array_filter($all, fn($f) =>

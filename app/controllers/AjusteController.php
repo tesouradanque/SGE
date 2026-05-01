@@ -13,7 +13,7 @@ class AjusteController extends Controller {
         $this->matModel = new Material();
     }
 
-    const PER_PAGE = 25;
+    const PER_PAGE = 10;
 
     public function index(): void {
         $page = max(1, (int) ($_GET['p'] ?? 1));

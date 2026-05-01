@@ -7,7 +7,7 @@ class MovimentoController extends Controller {
 
     public function __construct() { $this->requireAuth(); }
 
-    const PER_PAGE = 30;
+    const PER_PAGE = 10;
 
     public function index(): void {
         $matModel = new Material();

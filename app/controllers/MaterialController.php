@@ -4,7 +4,7 @@ require_once APP_PATH . '/models/Material.php';
 class MaterialController extends Controller {
 
     private Material $model;
-    const PER_PAGE = 25;
+    const PER_PAGE = 10;
 
     public function __construct() {
         $this->requireAuth();
@@ -14,7 +14,7 @@ class MaterialController extends Controller {
     public function index(): void {
         $search = trim($_GET['q'] ?? '');
         $page   = max(1, (int) ($_GET['p'] ?? 1));
-        $all    = $this->model->all('descricao ASC');
+        $all    = $this->model->all('id DESC');
 
         if ($search !== '') {
             $s   = mb_strtolower($search);

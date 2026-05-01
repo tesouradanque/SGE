@@ -9,7 +9,7 @@ class RequisicaoController extends Controller {
     private Funcionario $funcModel;
     private Material    $matModel;
 
-    const PER_PAGE = 20;
+    const PER_PAGE = 10;
 
     public function __construct() {
         $this->requireAuth();
