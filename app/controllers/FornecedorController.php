@@ -14,7 +14,7 @@ class FornecedorController extends Controller {
     public function index(): void {
         $search = trim($_GET['q'] ?? '');
         $page   = max(1, (int) ($_GET['p'] ?? 1));
-        $all    = $this->model->all('id DESC');
+        $all    = $this->model->all('id ASC');
         if ($search !== '') {
             $s   = mb_strtolower($search);
             $all = array_values(array_filter($all, fn($f) =>

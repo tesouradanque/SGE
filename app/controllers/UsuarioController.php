@@ -13,7 +13,7 @@ class UsuarioController extends Controller {
 
     public function index(): void {
         $page  = max(1, (int) ($_GET['p'] ?? 1));
-        $all   = $this->model->all('id DESC');
+        $all   = $this->model->all('id ASC');
         $pag   = $this->paginate(count($all), self::PER_PAGE, $page);
         $this->view('usuarios.index', [
             'usuarios' => array_slice($all, $pag['offset'], $pag['perPage']),

@@ -86,7 +86,7 @@ class Requisicao extends Model {
              LEFT JOIN itens_requisicao ri ON ri.requisicao_id = r.id
              {$where}
              GROUP BY r.id
-             ORDER BY r.data DESC, r.id DESC
+             ORDER BY r.id ASC
              LIMIT ? OFFSET ?",
             $params
         )->fetchAll();

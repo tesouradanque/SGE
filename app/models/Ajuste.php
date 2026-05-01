@@ -18,7 +18,7 @@ class Ajuste extends Model {
              FROM ajustes_estoque a
              JOIN materiais m ON m.id = a.material_id
              JOIN usuarios u  ON u.id = a.usuario_id
-             ORDER BY a.created_at DESC"
+             ORDER BY a.id ASC"
         )->fetchAll();
     }
 }

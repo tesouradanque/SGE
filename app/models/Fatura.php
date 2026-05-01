@@ -119,7 +119,7 @@ class Fatura extends Model {
              LEFT JOIN itens_fatura fi ON fi.fatura_id = f.id
              {$where}
              GROUP BY f.id
-             ORDER BY f.data DESC, f.id DESC
+             ORDER BY f.id ASC
              LIMIT ? OFFSET ?",
             $params
         )->fetchAll();

@@ -21,7 +21,7 @@ class MovimentoController extends Controller {
             $fatModel->movimentosEntrada($filtros),
             $reqModel->movimentos($filtros)
         );
-        usort($todos, fn($a, $b) => strcmp($b['data'] . $b['referencia'], $a['data'] . $a['referencia']));
+        usort($todos, fn($a, $b) => strcmp($a['data'] . $a['referencia'], $b['data'] . $b['referencia']));
 
         $totalEntradas = array_sum(array_column(array_filter($todos, fn($r) => $r['tipo'] === 'entrada'), 'quantidade'));
         $totalSaidas   = array_sum(array_column(array_filter($todos, fn($r) => $r['tipo'] === 'saida'),   'quantidade'));
