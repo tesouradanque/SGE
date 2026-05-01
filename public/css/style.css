@@ -1,0 +1,95 @@
+/* ── Sidebar ─────────────────────────────────────────────── */
+#sidebar {
+    min-width: 240px;
+    max-width: 240px;
+    min-height: 100vh;
+    background: #1a2236;
+    transition: all .3s;
+    position: relative;
+    z-index: 100;
+}
+#sidebar.collapsed { min-width: 66px; max-width: 66px; }
+#sidebar.collapsed .nav-label,
+#sidebar.collapsed .sidebar-brand-text,
+#sidebar.collapsed .menu-text { display: none; }
+
+.sidebar-brand {
+    padding: 18px 20px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.sidebar-brand-text { font-size: .9rem; font-weight: 700; color: #fff; }
+
+#sidebar .nav-link {
+    color: rgba(255,255,255,.65);
+    padding: 9px 20px;
+    font-size: .875rem;
+    border-radius: 6px;
+    margin: 1px 8px;
+    transition: .2s;
+    white-space: nowrap;
+}
+#sidebar .nav-link:hover,
+#sidebar .nav-link.active {
+    color: #fff;
+    background: rgba(255,255,255,.1);
+}
+#sidebar .nav-link i { width: 20px; text-align: center; margin-right: 10px; }
+.nav-label {
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    color: rgba(255,255,255,.35);
+    padding: 16px 28px 4px;
+    text-transform: uppercase;
+}
+
+/* ── Main wrapper ────────────────────────────────────────── */
+#main-content { min-height: 100vh; background: #f4f6fb; flex: 1; overflow-x: hidden; }
+
+/* ── Topbar ──────────────────────────────────────────────── */
+#topbar {
+    background: #fff;
+    border-bottom: 1px solid #e9ecef;
+    padding: 0 24px;
+    height: 56px;
+}
+
+/* ── Stat cards ──────────────────────────────────────────── */
+.stat-card { border: none; border-radius: 10px; box-shadow: 0 1px 6px rgba(0,0,0,.07); }
+.stat-card .icon-box {
+    width: 52px; height: 52px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+}
+
+/* ── Cards generic ───────────────────────────────────────── */
+.card { border: none; border-radius: 10px; box-shadow: 0 1px 6px rgba(0,0,0,.07); }
+.card-header { border-radius: 10px 10px 0 0 !important; border-bottom: 1px solid rgba(0,0,0,.06); }
+
+/* ── Tables ──────────────────────────────────────────────── */
+.table thead th {
+    background: #f8f9fa;
+    font-size: .78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: #6c757d;
+    border-bottom: 2px solid #dee2e6;
+}
+.table-hover tbody tr:hover { background: #f0f4ff; }
+
+/* ── Badges ──────────────────────────────────────────────── */
+.badge-ok      { background: #d1fae5; color: #065f46; }
+.badge-low     { background: #fef3c7; color: #92400e; }
+.badge-out     { background: #fee2e2; color: #991b1b; }
+
+/* ── Page title ──────────────────────────────────────────── */
+.page-title { font-size: 1.25rem; font-weight: 700; color: #1a2236; }
+
+/* ── Flash ───────────────────────────────────────────────── */
+.flash-container { position: fixed; top: 70px; right: 20px; z-index: 9999; min-width: 300px; }
+
+/* ── Dynamic rows form ───────────────────────────────────── */
+.item-row td { vertical-align: middle; }
+#items-table tfoot td { background: #f8f9fa; font-weight: 600; }

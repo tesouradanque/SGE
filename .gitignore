@@ -1,0 +1,26 @@
+# Ficheiros do assistente de desenvolvimento
+.claude/
+
+# Configuração local (copiar os .example e editar)
+config/database.php
+config/app.php
+
+# Ficheiros de template originais (não fazem parte do código)
+w3crmbootstrap-30/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Upload temporário
+public/uploads/tmp/
