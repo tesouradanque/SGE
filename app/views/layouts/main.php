@@ -38,14 +38,14 @@
     <!-- Nav Header -->
     <div class="nav-header">
       <a href="<?= BASE_URL ?>/home" class="brand-logo" aria-label="SGE">
-        <svg class="logo-abbr" width="39" height="23" viewBox="0 0 39 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!--<svg class="logo-abbr" width="39" height="23" viewBox="0 0 39 23" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M32.0362 22H19.0466L20.7071 18.7372C20.9559 18.2484 21.455 17.9378 22.0034 17.9305L31.1036 17.8093C33.0753 17.6497 33.6571 15.9246 33.7015 15.0821C33.7015 13.2196 32.1916 12.5765 31.4367 12.4878H23.7095L25.9744 8.49673H30.4375C31.8763 8.3903 32.236 7.03332 32.236 6.36814C32.3426 4.93133 30.9482 4.61648 30.2376 4.63865H28.6955C28.2646 4.63865 27.9788 4.19212 28.1592 3.8008L29.7047 0.44798C31.0903 0.394765 32.8577 0.780573 33.5683 0.980129C38.6309 3.42801 37.0988 7.98676 35.6999 9.96014C38.1513 11.9291 38.4976 14.3282 38.3644 15.2816C38.098 20.1774 34.0346 21.8005 32.0362 22Z" fill="var(--bs-primary)"/>
           <path d="M9.89261 21.4094L0 2.80536H4.86354C5.41354 2.80536 5.91795 3.11106 6.17246 3.59864L12.4032 15.5355C12.6333 15.9762 12.6261 16.5031 12.3842 16.9374L9.89261 21.4094Z" fill="#fff"/>
           <path d="M17.5705 21.4094L7.67786 2.80536H12.5372C13.0894 2.80536 13.5954 3.11351 13.8489 3.60412L20.302 16.0939L17.5705 21.4094Z" fill="#fff"/>
           <path d="M17.6443 21.4094L28.2751 0H23.4513C22.8806 0 22.361 0.328884 22.1168 0.844686L14.8271 16.2416L17.6443 21.4094Z" fill="#fff"/>
-        </svg>
-        <svg class="brand-title" width="32" height="16" viewBox="0 0 32 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <text x="0" y="13" font-size="14" font-weight="bold" fill="#fff" font-family="Arial">SGE</text>
+        </svg> -->
+        <svg class="brand-title" width="50" height="29" viewBox="0 0 32 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <text x="0" y="13" font-size="14" font-weight="bold" fill="#fff" font-family="Montserrat">SGE</text>
         </svg>
       </a>
       <div class="nav-control">
@@ -268,7 +268,7 @@
     <!-- Footer -->
     <div class="footer">
       <div class="copyright text-center">
-        <p class="mb-0">Copyright &copy; <?= date('Y') ?> <strong>SGE</strong> &mdash; Sistema de Gestão de Estoque</p>
+        <p class="mb-0">Copyright &copy; <?= date('Y') ?> <strong>SGE</strong> &mdash; Sistema de Gestão de Estoque V1.0</p>
       </div>
     </div>
 
