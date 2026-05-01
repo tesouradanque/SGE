@@ -11,5 +11,16 @@ require_once CORE_PATH  . '/Router.php';
 
 session_start();
 
+// Sessão expira após 60 minutos de inactividade
+if (!empty($_SESSION['usuario'])) {
+    if (isset($_SESSION['_last_activity']) && (time() - $_SESSION['_last_activity']) > 3600) {
+        session_unset();
+        session_destroy();
+        header('Location: ' . BASE_URL . '/auth/login');
+        exit;
+    }
+    $_SESSION['_last_activity'] = time();
+}
+
 $router = new Router();
 $router->dispatch();

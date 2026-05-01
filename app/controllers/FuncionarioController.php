@@ -11,18 +11,28 @@ class FuncionarioController extends Controller {
     }
 
     public function index(): void {
-        $this->view('funcionarios.index', ['funcionarios' => $this->model->all('nome ASC')]);
+        $search = trim($_GET['q'] ?? '');
+        $all    = $this->model->all('nome ASC');
+        if ($search !== '') {
+            $s   = mb_strtolower($search);
+            $all = array_values(array_filter($all, fn($f) =>
+                str_contains(mb_strtolower($f['nome']), $s) ||
+                str_contains(mb_strtolower($f['cargo'] ?? ''), $s)
+            ));
+        }
+        $this->view('funcionarios.index', ['funcionarios' => $all, 'search' => $search]);
     }
 
     public function create(): void {
-        $this->view('funcionarios.form', ['funcionario' => null, 'action' => 'create']);
+        $this->view('funcionarios.form', ['funcionario' => null, 'action' => 'create', 'csrf' => $this->csrfField()]);
     }
 
     public function store(): void {
         if (!$this->isPost()) { $this->redirect('funcionario'); }
+        $this->csrfVerify();
         $d = $this->camposPost();
         if (empty($d['nome'])) {
-            $this->view('funcionarios.form', ['funcionario' => $d, 'action' => 'create', 'erro' => 'Nome obrigatório.']);
+            $this->view('funcionarios.form', ['funcionario' => $d, 'action' => 'create', 'erro' => 'Nome obrigatório.', 'csrf' => $this->csrfField()]);
             return;
         }
         $this->model->save($d);
@@ -33,14 +43,15 @@ class FuncionarioController extends Controller {
     public function edit(string $id): void {
         $f = $this->model->find((int)$id);
         if (!$f) { $this->flash('error', 'Funcionário não encontrado.'); $this->redirect('funcionario'); }
-        $this->view('funcionarios.form', ['funcionario' => $f, 'action' => 'edit']);
+        $this->view('funcionarios.form', ['funcionario' => $f, 'action' => 'edit', 'csrf' => $this->csrfField()]);
     }
 
     public function update(string $id): void {
         if (!$this->isPost()) { $this->redirect('funcionario'); }
+        $this->csrfVerify();
         $d = $this->camposPost();
         if (empty($d['nome'])) {
-            $this->view('funcionarios.form', ['funcionario' => array_merge($d, ['id' => $id]), 'action' => 'edit', 'erro' => 'Nome obrigatório.']);
+            $this->view('funcionarios.form', ['funcionario' => array_merge($d, ['id' => $id]), 'action' => 'edit', 'erro' => 'Nome obrigatório.', 'csrf' => $this->csrfField()]);
             return;
         }
         $this->model->update((int)$id, $d);
@@ -49,6 +60,10 @@ class FuncionarioController extends Controller {
     }
 
     public function destroy(string $id): void {
+        if (!$this->isAdmin()) {
+            $this->flash('error', 'Apenas administradores podem eliminar funcionários.');
+            $this->redirect('funcionario');
+        }
         try {
             $this->model->delete((int)$id);
             $this->flash('success', 'Funcionário eliminado.');

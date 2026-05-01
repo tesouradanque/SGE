@@ -4,6 +4,7 @@ require_once APP_PATH . '/models/Material.php';
 class MaterialController extends Controller {
 
     private Material $model;
+    const PER_PAGE = 25;
 
     public function __construct() {
         $this->requireAuth();
@@ -11,18 +12,40 @@ class MaterialController extends Controller {
     }
 
     public function index(): void {
-        $this->view('materiais.index', ['materiais' => $this->model->all('descricao ASC')]);
+        $search = trim($_GET['q'] ?? '');
+        $page   = max(1, (int) ($_GET['p'] ?? 1));
+        $all    = $this->model->all('descricao ASC');
+
+        if ($search !== '') {
+            $s   = mb_strtolower($search);
+            $all = array_filter($all, fn($m) =>
+                str_contains(mb_strtolower($m['descricao']), $s) ||
+                str_contains(mb_strtolower($m['codigo']), $s)
+            );
+            $all = array_values($all);
+        }
+
+        $total = count($all);
+        $pag   = $this->paginate($total, self::PER_PAGE, $page);
+        $materiais = array_slice($all, $pag['offset'], $pag['perPage']);
+
+        $this->view('materiais.index', [
+            'materiais' => $materiais,
+            'search'    => $search,
+            'pag'       => $pag,
+        ]);
     }
 
     public function create(): void {
-        $this->view('materiais.form', ['material' => null, 'action' => 'create']);
+        $this->view('materiais.form', ['material' => null, 'action' => 'create', 'csrf' => $this->csrfField()]);
     }
 
     public function store(): void {
         if (!$this->isPost()) { $this->redirect('material'); }
+        $this->csrfVerify();
         $d = $this->camposPost();
         if (empty($d['codigo']) || empty($d['descricao'])) {
-            $this->view('materiais.form', ['material' => $d, 'action' => 'create', 'erro' => 'Código e Descrição são obrigatórios.']);
+            $this->view('materiais.form', ['material' => $d, 'action' => 'create', 'erro' => 'Código e Descrição são obrigatórios.', 'csrf' => $this->csrfField()]);
             return;
         }
         try {
@@ -30,21 +53,22 @@ class MaterialController extends Controller {
             $this->flash('success', 'Material criado com sucesso.');
             $this->redirect('material');
         } catch (\Exception $e) {
-            $this->view('materiais.form', ['material' => $d, 'action' => 'create', 'erro' => 'Código já existe.']);
+            $this->view('materiais.form', ['material' => $d, 'action' => 'create', 'erro' => 'Código já existe.', 'csrf' => $this->csrfField()]);
         }
     }
 
     public function edit(string $id): void {
         $m = $this->model->find((int)$id);
         if (!$m) { $this->flash('error', 'Material não encontrado.'); $this->redirect('material'); }
-        $this->view('materiais.form', ['material' => $m, 'action' => 'edit']);
+        $this->view('materiais.form', ['material' => $m, 'action' => 'edit', 'csrf' => $this->csrfField()]);
     }
 
     public function update(string $id): void {
         if (!$this->isPost()) { $this->redirect('material'); }
+        $this->csrfVerify();
         $d = $this->camposPost();
         if (empty($d['codigo']) || empty($d['descricao'])) {
-            $this->view('materiais.form', ['material' => array_merge($d, ['id' => $id]), 'action' => 'edit', 'erro' => 'Código e Descrição são obrigatórios.']);
+            $this->view('materiais.form', ['material' => array_merge($d, ['id' => $id]), 'action' => 'edit', 'erro' => 'Código e Descrição são obrigatórios.', 'csrf' => $this->csrfField()]);
             return;
         }
         $this->model->update((int)$id, $d);
@@ -53,6 +77,10 @@ class MaterialController extends Controller {
     }
 
     public function destroy(string $id): void {
+        if (!$this->isAdmin()) {
+            $this->flash('error', 'Apenas administradores podem eliminar materiais.');
+            $this->redirect('material');
+        }
         try {
             $this->model->delete((int)$id);
             $this->flash('success', 'Material eliminado.');

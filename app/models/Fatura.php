@@ -18,7 +18,9 @@ class Fatura extends Model {
 
     public function findComItens(int $id) {
         $fatura = $this->query(
-            "SELECT f.*, fn.nome AS fornecedor_nome
+            "SELECT f.*, fn.nome AS fornecedor_nome, fn.nif AS fornecedor_nif,
+                    fn.telefone AS fornecedor_tel, fn.email AS fornecedor_email,
+                    f.created_at
              FROM faturas f
              JOIN fornecedores fn ON fn.id = f.fornecedor_id
              WHERE f.id = ?",
@@ -91,6 +93,65 @@ class Fatura extends Model {
         )->fetchAll();
     }
 
+    public function nrExiste(string $nr, int $excludeId = 0): bool {
+        return (bool) $this->query(
+            'SELECT id FROM faturas WHERE nr_fatura=? AND id!=?', [$nr, $excludeId]
+        )->fetch();
+    }
+
+    public function countAll(array $filtros = []): int {
+        [$where, $params] = $this->buildWhere($filtros);
+        return (int) $this->query(
+            "SELECT COUNT(*) AS n FROM faturas f JOIN fornecedores fn ON fn.id=f.fornecedor_id {$where}",
+            $params
+        )->fetch()['n'];
+    }
+
+    public function allComFornecedorFiltrado(array $filtros = [], int $limit = 20, int $offset = 0): array {
+        [$where, $params] = $this->buildWhere($filtros);
+        $params[] = $limit;
+        $params[] = $offset;
+        return $this->query(
+            "SELECT f.*, fn.nome AS fornecedor_nome,
+                    COALESCE(SUM(fi.quantidade * fi.preco_unitario), 0) AS valor_total
+             FROM faturas f
+             JOIN fornecedores fn ON fn.id = f.fornecedor_id
+             LEFT JOIN itens_fatura fi ON fi.fatura_id = f.id
+             {$where}
+             GROUP BY f.id
+             ORDER BY f.data DESC, f.id DESC
+             LIMIT ? OFFSET ?",
+            $params
+        )->fetchAll();
+    }
+
+    private function buildWhere(array $filtros): array {
+        $conds  = [];
+        $params = [];
+        if (!empty($filtros['estado'])) {
+            $conds[]  = 'f.estado = ?';
+            $params[] = $filtros['estado'];
+        }
+        if (!empty($filtros['fornecedor_id'])) {
+            $conds[]  = 'f.fornecedor_id = ?';
+            $params[] = (int) $filtros['fornecedor_id'];
+        }
+        if (!empty($filtros['de'])) {
+            $conds[]  = 'f.data >= ?';
+            $params[] = $filtros['de'];
+        }
+        if (!empty($filtros['ate'])) {
+            $conds[]  = 'f.data <= ?';
+            $params[] = $filtros['ate'];
+        }
+        if (!empty($filtros['nr'])) {
+            $conds[]  = 'f.nr_fatura LIKE ?';
+            $params[] = '%' . $filtros['nr'] . '%';
+        }
+        $where = $conds ? 'WHERE ' . implode(' AND ', $conds) : '';
+        return [$where, $params];
+    }
+
     public function recentesCom(int $limit = 5): array {
         return $this->query(
             "SELECT f.*, fn.nome AS fornecedor_nome,
@@ -100,7 +161,56 @@ class Fatura extends Model {
              LEFT JOIN itens_fatura fi ON fi.fatura_id = f.id
              GROUP BY f.id
              ORDER BY f.created_at DESC
-             LIMIT {$limit}"
+             LIMIT ?",
+            [$limit]
+        )->fetchAll();
+    }
+
+    public function movimentosEntrada(array $filtros = []): array {
+        $conds  = ['1=1'];
+        $params = [];
+        if (!empty($filtros['material_id'])) {
+            $conds[]  = 'fi.material_id = ?';
+            $params[] = (int) $filtros['material_id'];
+        }
+        if (!empty($filtros['de'])) {
+            $conds[]  = 'f.data >= ?';
+            $params[] = $filtros['de'];
+        }
+        if (!empty($filtros['ate'])) {
+            $conds[]  = 'f.data <= ?';
+            $params[] = $filtros['ate'];
+        }
+        $where = 'WHERE ' . implode(' AND ', $conds);
+        return $this->query(
+            "SELECT f.data, f.nr_fatura AS referencia, fn.nome AS fornecedor,
+                    m.descricao AS material, m.unidade,
+                    fi.quantidade, fi.preco_unitario,
+                    (fi.quantidade * fi.preco_unitario) AS subtotal,
+                    'entrada' AS tipo
+             FROM itens_fatura fi
+             JOIN faturas f      ON f.id  = fi.fatura_id
+             JOIN fornecedores fn ON fn.id = f.fornecedor_id
+             JOIN materiais m    ON m.id  = fi.material_id
+             {$where}
+             ORDER BY f.data DESC, f.id DESC",
+            $params
+        )->fetchAll();
+    }
+
+    public function allParaCsv(array $filtros = []): array {
+        [$where, $params] = $this->buildWhere($filtros);
+        return $this->query(
+            "SELECT f.nr_fatura, fn.nome AS fornecedor, f.data, f.estado,
+                    COALESCE(SUM(fi.quantidade * fi.preco_unitario),0) AS valor_total,
+                    f.observacao
+             FROM faturas f
+             JOIN fornecedores fn ON fn.id = f.fornecedor_id
+             LEFT JOIN itens_fatura fi ON fi.fatura_id = f.id
+             {$where}
+             GROUP BY f.id
+             ORDER BY f.data DESC",
+            $params
         )->fetchAll();
     }
 }

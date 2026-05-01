@@ -4,6 +4,9 @@ class Router {
     private $map = [
         'faturas'     => 'FaturaController',
         'requisicoes' => 'RequisicaoController',
+        'usuarios'    => 'UsuarioController',
+        'movimentos'  => 'MovimentoController',
+        'ajuste'      => 'AjusteController',
     ];
 
     public function dispatch() {

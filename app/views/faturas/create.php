@@ -8,6 +8,7 @@
 <?php endif; ?>
 
 <form action="<?= BASE_URL ?>/faturas/store" method="POST">
+<?= $csrf ?? '' ?>
 <div class="card mb-3">
   <div class="card-header py-2 px-3"><strong>Dados da Fatura</strong></div>
   <div class="card-body p-3">

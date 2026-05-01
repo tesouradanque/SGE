@@ -9,6 +9,8 @@ class RequisicaoController extends Controller {
     private Funcionario $funcModel;
     private Material    $matModel;
 
+    const PER_PAGE = 20;
+
     public function __construct() {
         $this->requireAuth();
         $this->model     = new Requisicao();
@@ -17,7 +19,16 @@ class RequisicaoController extends Controller {
     }
 
     public function index(): void {
-        $this->view('requisicoes.index', ['requisicoes' => $this->model->allComFuncionario()]);
+        $filtros = $this->getFiltros();
+        $page    = max(1, (int) ($_GET['p'] ?? 1));
+        $pag     = $this->paginate($this->model->countAll($filtros), self::PER_PAGE, $page);
+
+        $this->view('requisicoes.index', [
+            'requisicoes'  => $this->model->allComFuncionarioFiltrado($filtros, $pag['perPage'], $pag['offset']),
+            'funcionarios' => $this->funcModel->all('nome ASC'),
+            'filtros'      => $filtros,
+            'pag'          => $pag,
+        ]);
     }
 
     public function create(): void {
@@ -26,6 +37,7 @@ class RequisicaoController extends Controller {
 
     public function store(): void {
         if (!$this->isPost()) { $this->redirect('requisicoes'); }
+        $this->csrfVerify();
 
         $nr         = $this->post('nr_requisicao');
         $dataRaw    = $this->post('data');
@@ -47,7 +59,6 @@ class RequisicaoController extends Controller {
             return;
         }
 
-        // Preload all stock in one query to avoid N+1
         $stockData = array_column($this->matModel->getStockActual(), null, 'id');
 
         foreach ($itensValidos as $item) {
@@ -87,9 +98,36 @@ class RequisicaoController extends Controller {
     }
 
     public function destroy(string $id): void {
+        if (!$this->isAdmin()) {
+            $this->flash('error', 'Apenas administradores podem eliminar requisições.');
+            $this->redirect('requisicoes');
+        }
         $this->model->delete((int)$id);
-        $this->flash('success', 'Requisição eliminada.');
+        $this->flash('success', 'Requisição eliminada. Stock restaurado.');
         $this->redirect('requisicoes');
+    }
+
+    public function exportCsv(): void {
+        $filtros = $this->getFiltros();
+        $rows    = $this->model->allParaCsv($filtros);
+
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="requisicoes_' . date('Ymd_His') . '.csv"');
+        $out = fopen('php://output', 'w');
+        fprintf($out, chr(0xEF) . chr(0xBB) . chr(0xBF));
+        fputcsv($out, ['Nº Req.', 'Funcionário', 'Data', 'Nº Itens', 'Valor Total (MT)', 'Observação'], ';');
+        foreach ($rows as $r) {
+            fputcsv($out, [
+                $r['nr_requisicao'],
+                $r['funcionario'],
+                date('d/m/Y', strtotime($r['data'])),
+                $r['nr_itens'],
+                number_format($r['valor_total'], 2, ',', '.'),
+                $r['observacao'] ?? '',
+            ], ';');
+        }
+        fclose($out);
+        exit;
     }
 
     private function renderCreate(string $erro = ''): void {
@@ -103,6 +141,22 @@ class RequisicaoController extends Controller {
             'materiais'    => $materiais,
             'stockMap'     => $stockMap,
             'erro'         => $erro,
+            'csrf'         => $this->csrfField(),
         ]);
+    }
+
+    private function getFiltros(): array {
+        $f = [];
+        if (!empty($_GET['funcionario_id'])) $f['funcionario_id'] = (int) $_GET['funcionario_id'];
+        if (!empty($_GET['nr']))             $f['nr']             = $_GET['nr'];
+        if (!empty($_GET['de'])) {
+            $d = \DateTime::createFromFormat('d/m/Y', $_GET['de']);
+            if ($d) $f['de'] = $d->format('Y-m-d');
+        }
+        if (!empty($_GET['ate'])) {
+            $d = \DateTime::createFromFormat('d/m/Y', $_GET['ate']);
+            if ($d) $f['ate'] = $d->format('Y-m-d');
+        }
+        return $f;
     }
 }

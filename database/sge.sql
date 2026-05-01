@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS funcionarios (
 -- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS faturas (
     id            INT AUTO_INCREMENT PRIMARY KEY,
-    nr_fatura     VARCHAR(60)  NOT NULL,
+    nr_fatura     VARCHAR(60)  NOT NULL UNIQUE,
     data          DATE         NOT NULL,
     fornecedor_id INT          NOT NULL,
     observacao    TEXT         DEFAULT NULL,
@@ -95,3 +95,21 @@ CREATE TABLE IF NOT EXISTS usuarios (
     ativo      TINYINT(1)   DEFAULT 1,
     created_at TIMESTAMP    DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
+
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS ajustes_estoque (
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    material_id INT           NOT NULL,
+    tipo        ENUM('entrada','saida') NOT NULL,
+    quantidade  DECIMAL(12,2) NOT NULL,
+    motivo      TEXT          NOT NULL,
+    usuario_id  INT           NOT NULL,
+    created_at  TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (material_id) REFERENCES materiais(id),
+    FOREIGN KEY (usuario_id)  REFERENCES usuarios(id)
+) ENGINE=InnoDB;
+
+-- ============================================================
+-- Migration notes (run on existing databases):
+-- ALTER TABLE faturas ADD UNIQUE (nr_fatura);
+-- ============================================================

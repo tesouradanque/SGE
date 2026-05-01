@@ -5,6 +5,20 @@
   </a>
 </div>
 
+<!-- Pesquisa -->
+<div class="card mb-3">
+  <div class="card-body py-2 px-3">
+    <form method="GET" action="<?= BASE_URL ?>/material" class="d-flex gap-2">
+      <input type="text" name="q" class="form-control form-control-sm" style="max-width:300px"
+        value="<?= htmlspecialchars($search ?? '') ?>" placeholder="Pesquisar por código ou descrição...">
+      <button type="submit" class="btn btn-sm btn-primary"><i class="fas fa-search"></i></button>
+      <?php if (!empty($search)): ?>
+      <a href="<?= BASE_URL ?>/material" class="btn btn-sm btn-outline-secondary"><i class="fas fa-times"></i></a>
+      <?php endif; ?>
+    </form>
+  </div>
+</div>
+
 <div class="card">
   <div class="table-responsive">
     <table class="table table-hover mb-0">
@@ -13,22 +27,24 @@
       </thead>
       <tbody>
       <?php if (empty($materiais)): ?>
-        <tr><td colspan="6" class="text-center text-muted py-4">Nenhum material cadastrado.</td></tr>
+        <tr><td colspan="6" class="text-center text-muted py-4">Nenhum material encontrado.</td></tr>
       <?php else: foreach ($materiais as $m): ?>
         <tr>
           <td><code><?= htmlspecialchars($m['codigo']) ?></code></td>
           <td class="fw-semibold"><?= htmlspecialchars($m['descricao']) ?></td>
           <td><?= htmlspecialchars($m['unidade']) ?></td>
-          <td class="text-end"><?= number_format($m['preco_unitario_padrao'], 2, ',', '.') ?></td>
+          <td class="text-end"><?= number_format($m['preco_unitario_padrao'], 2, ',', '.') ?> MT</td>
           <td class="text-end"><?= number_format($m['stock_minimo'], 2, ',', '.') ?></td>
           <td class="text-end">
             <a href="<?= BASE_URL ?>/material/edit/<?= $m['id'] ?>" class="btn btn-sm btn-outline-secondary me-1"><i class="fas fa-pen"></i></a>
+            <?php if (($_SESSION['usuario']['perfil'] ?? '') === 'admin'): ?>
             <button class="btn btn-sm btn-outline-danger"
               data-bs-toggle="modal" data-bs-target="#delModal"
               data-url="<?= BASE_URL ?>/material/destroy/<?= $m['id'] ?>"
               data-nome="<?= htmlspecialchars($m['descricao']) ?>">
               <i class="fas fa-trash"></i>
             </button>
+            <?php endif; ?>
           </td>
         </tr>
       <?php endforeach; endif; ?>
@@ -36,6 +52,8 @@
     </table>
   </div>
 </div>
+
+<?php require APP_PATH . '/views/partials/pagination.php'; ?>
 
 <div class="modal fade" id="delModal" tabindex="-1">
   <div class="modal-dialog modal-sm"><div class="modal-content">

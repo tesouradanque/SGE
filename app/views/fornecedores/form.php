@@ -11,6 +11,7 @@
     <?php endif; ?>
 
     <form action="<?= BASE_URL ?>/fornecedor/<?= $isEdit ? 'update/' . $fornecedor['id'] : 'store' ?>" method="POST">
+      <?= $csrf ?? '' ?>
       <div class="row g-3">
         <div class="col-md-8">
           <label class="form-label fw-semibold">Nome <span class="text-danger">*</span></label>

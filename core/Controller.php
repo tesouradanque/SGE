@@ -49,5 +49,50 @@ class Controller {
         }
     }
 
+    protected function requireAdmin(): void {
+        $this->requireAuth();
+        if (($_SESSION['usuario']['perfil'] ?? '') !== 'admin') {
+            $this->flash('error', 'Acesso restrito a administradores.');
+            $this->redirect('home');
+        }
+    }
 
+    protected function isAdmin(): bool {
+        return ($_SESSION['usuario']['perfil'] ?? '') === 'admin';
+    }
+
+    // CSRF ---------------------------------------------------------------
+
+    protected function csrfToken(): string {
+        if (empty($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+        return $_SESSION['csrf_token'];
+    }
+
+    protected function csrfVerify(): void {
+        $token = $_POST['_csrf'] ?? '';
+        if (!hash_equals($_SESSION['csrf_token'] ?? '', $token)) {
+            $this->flash('error', 'Pedido inválido. Tente novamente.');
+            $this->redirect('home');
+        }
+    }
+
+    protected function csrfField(): string {
+        return '<input type="hidden" name="_csrf" value="' . htmlspecialchars($this->csrfToken()) . '">';
+    }
+
+    // Paginação helper ---------------------------------------------------
+
+    protected function paginate(int $total, int $perPage, int $page): array {
+        $totalPages = max(1, (int) ceil($total / $perPage));
+        $page       = max(1, min($page, $totalPages));
+        return [
+            'total'      => $total,
+            'perPage'    => $perPage,
+            'page'       => $page,
+            'totalPages' => $totalPages,
+            'offset'     => ($page - 1) * $perPage,
+        ];
+    }
 }

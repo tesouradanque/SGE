@@ -15,4 +15,22 @@ class Usuario extends Model {
         );
         return (int) $this->lastId();
     }
+
+    public function update(int $id, array $d): void {
+        if (!empty($d['senha'])) {
+            $this->query(
+                'UPDATE usuarios SET nome=?, email=?, senha=?, perfil=?, ativo=? WHERE id=?',
+                [$d['nome'], $d['email'], password_hash($d['senha'], PASSWORD_DEFAULT), $d['perfil'], $d['ativo'] ?? 1, $id]
+            );
+        } else {
+            $this->query(
+                'UPDATE usuarios SET nome=?, email=?, perfil=?, ativo=? WHERE id=?',
+                [$d['nome'], $d['email'], $d['perfil'], $d['ativo'] ?? 1, $id]
+            );
+        }
+    }
+
+    public function emailExiste(string $email, int $excludeId = 0): bool {
+        return (bool) $this->query('SELECT id FROM usuarios WHERE email=? AND id!=?', [$email, $excludeId])->fetch();
+    }
 }

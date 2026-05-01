@@ -11,6 +11,7 @@
     <?php endif; ?>
 
     <form action="<?= BASE_URL ?>/material/<?= $isEdit ? 'update/' . $material['id'] : 'store' ?>" method="POST">
+      <?= $csrf ?? '' ?>
       <div class="row g-3">
         <div class="col-md-4">
           <label class="form-label fw-semibold">Código <span class="text-danger">*</span></label>

@@ -187,6 +187,19 @@
 
           <li class="menu-title">ANÁLISE</li>
 
+          <li class="<?= $ctrl === 'movimentos' ? 'mm-active' : '' ?>">
+            <a href="<?= BASE_URL ?>/movimentos" aria-expanded="false">
+              <div class="menu-icon">
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M11 2V20M2 11H20" stroke="#888" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M6 7L11 2L16 7" stroke="#888" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M6 15L11 20L16 15" stroke="#888" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <span class="nav-text">Movimentos</span>
+            </a>
+          </li>
+
           <li class="<?= $ctrl === 'relatorio' ? 'mm-active' : '' ?>">
             <a href="<?= BASE_URL ?>/relatorio" aria-expanded="false">
               <div class="menu-icon">
@@ -200,6 +213,35 @@
               <span class="nav-text">Relatórios</span>
             </a>
           </li>
+
+          <?php if (($_SESSION['usuario']['perfil'] ?? '') === 'admin'): ?>
+          <li class="menu-title">ADMINISTRAÇÃO</li>
+
+          <li class="<?= $ctrl === 'ajuste' ? 'mm-active' : '' ?>">
+            <a href="<?= BASE_URL ?>/ajuste" aria-expanded="false">
+              <div class="menu-icon">
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M11 4V18M4 11H18" stroke="#888" stroke-width="2" stroke-linecap="round"/>
+                  <circle cx="11" cy="11" r="8" stroke="#888" stroke-width="1.5"/>
+                </svg>
+              </div>
+              <span class="nav-text">Ajustes de Stock</span>
+            </a>
+          </li>
+
+          <li class="<?= $ctrl === 'usuarios' ? 'mm-active' : '' ?>">
+            <a href="<?= BASE_URL ?>/usuarios" aria-expanded="false">
+              <div class="menu-icon">
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="9" cy="7" r="4" stroke="#888" stroke-width="1.5"/>
+                  <path d="M2 19C2 16.2 5.1 14 9 14" stroke="#888" stroke-linecap="round"/>
+                  <path d="M15 14L15 20M12 17H18" stroke="#888" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <span class="nav-text">Utilizadores</span>
+            </a>
+          </li>
+          <?php endif; ?>
 
         </ul>
       </div>
