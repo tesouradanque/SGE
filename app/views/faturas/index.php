@@ -2,8 +2,11 @@
 <div class="d-flex align-items-center justify-content-between mb-4">
   <h5 class="page-title mb-0"><i class="fas fa-file-invoice me-2 text-primary"></i>Entradas – Faturas</h5>
   <div class="d-flex gap-2">
-    <a href="<?= BASE_URL ?>/faturas/exportCsv?<?= htmlspecialchars(http_build_query(array_diff_key($qs, ['p'=>'']))) ?>"
-       class="btn btn-sm btn-outline-success"><i class="fas fa-file-csv me-1"></i>Exportar CSV</a>
+    <?php $qs_exp = http_build_query(array_diff_key($qs, ['p'=>'','url'=>''])); ?>
+    <a href="<?= BASE_URL ?>/faturas/exportCsv<?= $qs_exp ? '?'.$qs_exp : '' ?>"
+       class="btn btn-sm btn-outline-success"><i class="fas fa-file-csv me-1"></i>CSV</a>
+    <a href="<?= BASE_URL ?>/faturas/exportXlsx<?= $qs_exp ? '?'.$qs_exp : '' ?>"
+       class="btn btn-sm btn-outline-success"><i class="fas fa-file-excel me-1"></i>Excel</a>
     <a href="<?= BASE_URL ?>/faturas/create" class="btn btn-primary"><i class="fas fa-plus me-1"></i>Nova Fatura</a>
   </div>
 </div>

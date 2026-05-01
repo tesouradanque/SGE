@@ -2,6 +2,7 @@
 require_once APP_PATH . '/models/Requisicao.php';
 require_once APP_PATH . '/models/Funcionario.php';
 require_once APP_PATH . '/models/Material.php';
+require_once CORE_PATH . '/XlsxWriter.php';
 
 class RequisicaoController extends Controller {
 
@@ -108,8 +109,7 @@ class RequisicaoController extends Controller {
     }
 
     public function exportCsv(): void {
-        $filtros = $this->getFiltros();
-        $rows    = $this->model->allParaCsv($filtros);
+        $rows = $this->model->allParaCsv($this->getFiltros());
 
         header('Content-Type: text/csv; charset=utf-8');
         header('Content-Disposition: attachment; filename="requisicoes_' . date('Ymd_His') . '.csv"');
@@ -118,8 +118,7 @@ class RequisicaoController extends Controller {
         fputcsv($out, ['Nº Req.', 'Funcionário', 'Data', 'Nº Itens', 'Valor Total (MT)', 'Observação'], ';');
         foreach ($rows as $r) {
             fputcsv($out, [
-                $r['nr_requisicao'],
-                $r['funcionario'],
+                $r['nr_requisicao'], $r['funcionario'],
                 date('d/m/Y', strtotime($r['data'])),
                 $r['nr_itens'],
                 number_format($r['valor_total'], 2, ',', '.'),
@@ -128,6 +127,19 @@ class RequisicaoController extends Controller {
         }
         fclose($out);
         exit;
+    }
+
+    public function exportXlsx(): void {
+        $rows    = $this->model->allParaCsv($this->getFiltros());
+        $headers = ['Nº Req.', 'Funcionário', 'Data', 'Nº Itens', 'Valor Total (MT)', 'Observação'];
+        $data    = array_map(fn($r) => [
+            $r['nr_requisicao'], $r['funcionario'],
+            date('d/m/Y', strtotime($r['data'])),
+            $r['nr_itens'],
+            number_format($r['valor_total'], 2, ',', '.'),
+            $r['observacao'] ?? '',
+        ], $rows);
+        XlsxWriter::download('requisicoes_' . date('Ymd_His') . '.xlsx', $headers, $data);
     }
 
     private function renderCreate(string $erro = ''): void {

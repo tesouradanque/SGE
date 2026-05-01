@@ -2,6 +2,7 @@
 require_once APP_PATH . '/models/Fatura.php';
 require_once APP_PATH . '/models/Fornecedor.php';
 require_once APP_PATH . '/models/Material.php';
+require_once CORE_PATH . '/XlsxWriter.php';
 
 class FaturaController extends Controller {
 
@@ -137,18 +138,16 @@ class FaturaController extends Controller {
     }
 
     public function exportCsv(): void {
-        $filtros = $this->getFiltros();
-        $rows    = $this->model->allParaCsv($filtros);
+        $rows = $this->model->allParaCsv($this->getFiltros());
 
         header('Content-Type: text/csv; charset=utf-8');
         header('Content-Disposition: attachment; filename="faturas_' . date('Ymd_His') . '.csv"');
         $out = fopen('php://output', 'w');
-        fprintf($out, chr(0xEF) . chr(0xBB) . chr(0xBF)); // BOM UTF-8
+        fprintf($out, chr(0xEF) . chr(0xBB) . chr(0xBF));
         fputcsv($out, ['Nº Fatura', 'Fornecedor', 'Data', 'Estado', 'Valor Total (MT)', 'Observação'], ';');
         foreach ($rows as $r) {
             fputcsv($out, [
-                $r['nr_fatura'],
-                $r['fornecedor'],
+                $r['nr_fatura'], $r['fornecedor'],
                 date('d/m/Y', strtotime($r['data'])),
                 ucfirst($r['estado']),
                 number_format($r['valor_total'], 2, ',', '.'),
@@ -157,6 +156,19 @@ class FaturaController extends Controller {
         }
         fclose($out);
         exit;
+    }
+
+    public function exportXlsx(): void {
+        $rows    = $this->model->allParaCsv($this->getFiltros());
+        $headers = ['Nº Fatura', 'Fornecedor', 'Data', 'Estado', 'Valor Total (MT)', 'Observação'];
+        $data    = array_map(fn($r) => [
+            $r['nr_fatura'], $r['fornecedor'],
+            date('d/m/Y', strtotime($r['data'])),
+            ucfirst($r['estado']),
+            number_format($r['valor_total'], 2, ',', '.'),
+            $r['observacao'] ?? '',
+        ], $rows);
+        XlsxWriter::download('faturas_' . date('Ymd_His') . '.xlsx', $headers, $data);
     }
 
     private function getFiltros(): array {
